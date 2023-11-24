@@ -41,31 +41,6 @@ else {
     Write-Host "`t[+] Installing with PowerShell version $psVersion" -ForegroundColor Green
 }
 
-# Ensure script is ran as administrator
-Write-Host "[+] Checking if script is running as administrator..."
-$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-if (-Not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Host "`t[!] Please run this script as administrator" -ForegroundColor Red
-    Read-Host "Press any key to exit..."
-    exit 1
-}
-else {
-    Write-Host "`t[+] Running as administrator" -ForegroundColor Green
-    Start-Sleep -Milliseconds 500
-}
-
-# Ensure execution policy is unrestricted
-Write-Host "[+] Checking if execution policy is unrestricted..."
-if ((Get-ExecutionPolicy).ToString() -ne "Unrestricted") {
-    Write-Host "`t[!] Please run this script after updating your execution policy to unrestricted" -ForegroundColor Red
-    Write-Host "`t[-] Hint: Set-ExecutionPolicy Unrestricted" -ForegroundColor Yellow
-    Read-Host "Press any key to exit..."
-    exit 1
-}
-else {
-    Write-Host "`t[+] Execution policy is unrestricted" -ForegroundColor Green
-    Start-Sleep -Milliseconds 500
-}
 # Check for spaces in the username, exit if identified
 Write-Host "[+] Checking for spaces in the username..."
 $currentUsername = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
