@@ -134,7 +134,7 @@ try {
 catch{
     Write-Host "`t[!] Failed to install (some) default applications" -ForegroundColor Yellow
 }
-if($installExtraApps -eq $true)
+if($installExtraApps)
 {
     # Install role specific applications using Chocolatey
     try {
@@ -145,9 +145,7 @@ if($installExtraApps -eq $true)
         Write-Host "`t[!] Failed to install (some) extra applications with Chocolatey" -ForegroundColor Yellow
     }
 }
-{
-    Write-Host "`t[!] No additional role based apps are requested to be installed" -ForegroundColor Yellow    
-}
+
 
 Enable-UAC
 Enable-MicrosoftUpdate
