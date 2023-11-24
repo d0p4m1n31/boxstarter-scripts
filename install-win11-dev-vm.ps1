@@ -1,5 +1,5 @@
-$installExtraApps = $true;
-$extraAppScriptFileName = "devApplications.ps1"; #if $installExtraApps is set to $true, make sure to add the filename for the extra apps script you place in the scripts folder here.
+$installExtraApps = $true
+$extraAppScriptFileName = "devApplications.ps1" #if $installExtraApps is set to $true, make sure to add the filename for the extra apps script you place in the scripts folder here.
 
 # List of Built-in aspplications to remove
 $appsToRemove = @(
@@ -139,10 +139,10 @@ if($installExtraApps -eq $true)
     # Install role specific applications using Chocolatey
     try {
         executeScript $extraAppScriptFileName;
-        Write-Host "`t[+] Installed the "$machineRole" applications with Chocolatey" -ForegroundColor Green      
+        Write-Host "`t[+] Installed the extra applications with Chocolatey" -ForegroundColor Green      
     }
     catch{
-        Write-Host "`t[!] Failed to install (some) machine role specific applications" -ForegroundColor Yellow
+        Write-Host "`t[!] Failed to install (some) extra applications with Chocolatey" -ForegroundColor Yellow
     }
 }
 {
