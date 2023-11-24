@@ -1,5 +1,3 @@
-$installExtraApps = $true;
-$extraAppScriptFileName = ""; #if $installExtraApps is set to $true, make sure to add the filename for the extra apps script you place in the scripts folder here.
 
 # List of Built-in aspplications to remove
 $appsToRemove = @(
@@ -26,7 +24,7 @@ write-host "helper script base URI is $helperUri"
 function executeScript {
     Param ([string]$script)
     write-host "executing $helperUri/$script ..."
-	iex ((new-object net.webclient).DownloadString("$helperUri/$script"))
+    iex ((new-object net.webclient).DownloadString("$helperUri/$script"))
 }
 
 # Check PowerShell version
@@ -113,6 +111,36 @@ catch {
     Write-Host "`t[!] Failed to disable unwanted scheduled tasks" -ForegroundColor Yellow
 }
 
+# Attempt to disable unwanted features
+Write-Host "[+] Attempting to disable unwanted features..."
+try {
+    #Disabling Windows Error Reporting
+    Disable-WindowsErrorReporting -ErrorAction SilentlyContinue | Out-Null     
+    Write-Host "`t[+] Finished disabling unwanted features" -ForegroundColor Green       
+
+    #Disables Windows Feedback Experience
+    Write-Host "Disabling Windows Feedback Experience program"
+    $Advertising = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo'
+    If (Test-Path $Advertising) {
+        Set-ItemProperty $Advertising Enabled -Value 0
+    }
+    #Disables live tiles
+    Write-Host "Disabling live tiles"
+    $Live = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications'    
+    If (!(Test-Path $Live)) {
+        mkdir $Live  
+        New-ItemProperty $Live NoTileApplicationNotification -Value 1
+    }    
+    #Disables Bing Search from Taskbar
+    Write-Host "Disabling Bing Search when using Search via the Start Menu"
+    $BingSearch = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer'
+    If (Test-Path $BingSearch) {
+        Set-ItemProperty $BingSearch DisableSearchBoxSuggestions -Value 1
+    }
+}
+catch {
+    Write-Host "`t[!] Failed to disable unwanted features" -ForegroundColor Yellow
+}
 
 # Attempt to remove unwanted apps
 Write-Host "[+] Attempting to remove default selected apps..."
@@ -129,24 +157,10 @@ catch {
 # Install default applications using Chocolatey
 try {
     executeScript "DefaultApplications.ps1";
-    Write-Host "`t[+] Installed the default applications with Chocolatey" -ForegroundColor Green      
+    Write-Host "`t[+] Installed the default applications with Chocolatey" -ForegroundColor Green    
 }
-catch{
+catch {
     Write-Host "`t[!] Failed to install (some) default applications" -ForegroundColor Yellow
-}
-if($installExtraApps -eq $true)
-{
-    # Install role specific applications using Chocolatey
-    try {
-        executeScript $extraAppScriptFileName;
-        Write-Host "`t[+] Installed the extra applications with Chocolatey" -ForegroundColor Green      
-    }
-    catch{
-        Write-Host "`t[!] Failed to install (some) extra applications with Chocolatey" -ForegroundColor Yellow
-    }
-}
-{
-    Write-Host "`t[!] No additional role based apps are requested to be installed" -ForegroundColor Yellow    
 }
 
 Enable-UAC
