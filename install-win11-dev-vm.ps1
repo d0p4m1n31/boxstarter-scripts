@@ -1,6 +1,3 @@
-$installExtraApps = $true;
-#if $installExtraApps is set to $true, make sure to add the filename for the extra apps script you place in the scripts folder here.
-$extraAppScriptFileName = "devApplications.ps1";
 
 # List of Built-in aspplications to remove
 $appsToRemove = @(
@@ -114,6 +111,15 @@ catch {
     Write-Host "`t[!] Failed to disable unwanted scheduled tasks" -ForegroundColor Yellow
 }
 
+# Attempt to disable unwanted features
+Write-Host "[+] Attempting to disable unwanted features..."
+try {
+    Disable-WindowsErrorReporting -ErrorAction SilentlyContinue | Out-Null     
+    Write-Host "`t[+] Finished disabling unwanted features" -ForegroundColor Green       
+}
+catch {
+    Write-Host "`t[!] Failed to disable unwanted features" -ForegroundColor Yellow
+}
 
 # Attempt to remove unwanted apps
 Write-Host "[+] Attempting to remove default selected apps..."
