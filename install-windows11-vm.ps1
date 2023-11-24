@@ -76,40 +76,7 @@ $response = Read-Host
 if ($response -notin @("y", "Y")) {
     exit 1
 }
-# Check Boxstarter version
-$boxstarterVersionGood = $false
-if (${Env:ChocolateyInstall} -and (Test-Path "${Env:ChocolateyInstall}\bin\choco.exe")) {
-    choco info -l -r "boxstarter" | ForEach-Object { $name, $version = $_ -split '\|' }
-    $boxstarterVersionGood = [System.Version]$version -ge [System.Version]"3.0.2"
-}
 
-# Install Boxstarter if needed
-if (-not $boxstarterVersionGood) {
-    Write-Host "[+] Installing Boxstarter..." -ForegroundColor Cyan
-    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://boxstarter.org/bootstrapper.ps1'))
-    Get-Boxstarter -Force
-
-    Start-Sleep -Milliseconds 500
-}
-Import-Module "${Env:ProgramData}\boxstarter\boxstarter.chocolatey\boxstarter.chocolatey.psd1" -Force
-
-# Check Chocolatey version
-$version = choco --version
-$chocolateyVersionGood = [System.Version]$version -ge [System.Version]"2.0.0"
-
-# Update Chocolatey if needed
-if (-not ($chocolateyVersionGood)) { choco upgrade chocolatey }
-
-# Attempt to disable updates (i.e., windows updates and store updates)
-Write-Host "[+] Attempting to disable updates..."
-Disable-MicrosoftUpdate
-try {
-    New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore" -Name "AutoDownload" -PropertyType DWord -Value 2 -ErrorAction Stop -Force | Out-Null
-}
-catch {
-    Write-Host "`t[!] Failed to disable Microsoft Store updates" -ForegroundColor Yellow
-}
 
 # Set Boxstarter options
 $Boxstarter.RebootOk = (-not $noReboots.IsPresent)
@@ -120,14 +87,6 @@ $global:VerbosePreference = "SilentlyContinue"
 Set-BoxstarterConfig -NugetSources "$desktopPath;.;https://www.myget.org/F/vm-packages/api/v2;https://myget.org/F/vm-packages/api/v2;https://chocolatey.org/api/v2"
 Set-WindowsExplorerOptions -EnableShowHiddenFilesFoldersDrives -EnableShowProtectedOSFiles -EnableShowFileExtensions -EnableShowFullPathInTitleBar
 
-# Set Chocolatey options
-Write-Host "[+] Updating Chocolatey settings..."
-choco sources add -n="vm-packages" -s "$desktopPath;.;https://www.myget.org/F/vm-packages/api/v2;https://myget.org/F/vm-packages/api/v2" --priority 1
-choco feature enable -n allowGlobalConfirmation
-choco feature enable -n allowEmptyChecksums
-$cache = "${Env:LocalAppData}\ChocoCache"
-New-Item -Path $cache -ItemType directory -Force | Out-Null
-choco config set cacheLocation $cache
 
 # Set power options to prevent installs from timing out
 powercfg -change -monitor-timeout-ac 0 | Out-Null
