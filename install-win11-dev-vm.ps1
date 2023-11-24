@@ -136,8 +136,8 @@ catch{
 }
 
 if($installExtraApps)
-Write-Host "[+] Installing extra apps in file:"$extraAppScriptFileName
 {
+    Write-Host "[+] Installing extra apps in file:"$extraAppScriptFileName
     # Install role specific applications using Chocolatey
     try {
         executeScript $extraAppScriptFileName
