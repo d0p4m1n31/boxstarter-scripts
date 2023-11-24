@@ -70,13 +70,6 @@ if (-Not (($disk.used + $disk.free) / 1GB -gt 58.8)) {
 else {
     Write-Host "`t[+] Disk is larger than 60 GB" -ForegroundColor Green
 }
-# Prompt user to remind them to take a snapshot
-Write-Host "[-] Have you taken a VM snapshot to ensure you can revert to pre-installation state? (Y/N): " -ForegroundColor Yellow -NoNewline
-$response = Read-Host
-if ($response -notin @("y", "Y")) {
-    exit 1
-}
-
 
 # Set Boxstarter options
 $Boxstarter.RebootOk = (-not $noReboots.IsPresent)
