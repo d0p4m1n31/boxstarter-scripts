@@ -130,16 +130,8 @@ catch {
 # Install default applications using Chocolatey
 try {
     executeScript "DefaultApplications.ps1";
+    executeScript "DevApplications.ps1";
     Write-Host "`t[+] Installed the default applications with Chocolatey" -ForegroundColor Green    
-    if($installExtraApps){  
-        try{
-            executeScript $extraAppScriptFileName;
-            Write-Host "`t[+] Installed the extra applications with Chocolatey" -ForegroundColor Green 
-        }
-        catch{
-            Write-Host "`t[!] Failed to install (some) extra applications with Chocolatey" -ForegroundColor Yellow
-        }
-    }
 }
 catch{
     Write-Host "`t[!] Failed to install (some) default applications" -ForegroundColor Yellow
