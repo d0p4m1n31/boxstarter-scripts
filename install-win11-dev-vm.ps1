@@ -1,5 +1,6 @@
-$installExtraApps = $true
-$extraAppScriptFileName = "devApplications.ps1" #if $installExtraApps is set to $true, make sure to add the filename for the extra apps script you place in the scripts folder here.
+$installExtraApps = $true;
+#if $installExtraApps is set to $true, make sure to add the filename for the extra apps script you place in the scripts folder here.
+$extraAppScriptFileName = "devApplications.ps1";
 
 # List of Built-in aspplications to remove
 $appsToRemove = @(
@@ -129,25 +130,20 @@ catch {
 # Install default applications using Chocolatey
 try {
     executeScript "DefaultApplications.ps1";
-    Write-Host "`t[+] Installed the default applications with Chocolatey" -ForegroundColor Green      
+    Write-Host "`t[+] Installed the default applications with Chocolatey" -ForegroundColor Green    
+    if($installExtraApps){  
+        try{
+            executeScript $extraAppScriptFileName;
+            Write-Host "`t[+] Installed the extra applications with Chocolatey" -ForegroundColor Green 
+        }
+        catch{
+            Write-Host "`t[!] Failed to install (some) extra applications with Chocolatey" -ForegroundColor Yellow
+        }
+    }
 }
 catch{
     Write-Host "`t[!] Failed to install (some) default applications" -ForegroundColor Yellow
 }
-
-if($installExtraApps)
-{
-    Write-Host "[+] Installing extra apps in file:"$extraAppScriptFileName
-    # Install role specific applications using Chocolatey
-    try {
-        executeScript $extraAppScriptFileName
-        Write-Host "`t[+] Installed the extra applications with Chocolatey" -ForegroundColor Green      
-    }
-    catch{
-        Write-Host "`t[!] Failed to install (some) extra applications with Chocolatey" -ForegroundColor Yellow
-    }
-}
-
 
 Enable-UAC
 Enable-MicrosoftUpdate
