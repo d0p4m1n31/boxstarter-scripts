@@ -1,4 +1,4 @@
-$installExtraApps = $false
+$installExtraApps = $true
 $extraAppScriptFileName = "devApplications.ps1" #if $installExtraApps is set to $true, make sure to add the filename for the extra apps script you place in the scripts folder here.
 
 # List of Built-in aspplications to remove
@@ -134,7 +134,9 @@ try {
 catch{
     Write-Host "`t[!] Failed to install (some) default applications" -ForegroundColor Yellow
 }
+
 if($installExtraApps)
+Write-Host "[+] Installing extra apps in file:"$extraAppScriptFileName
 {
     # Install role specific applications using Chocolatey
     try {
