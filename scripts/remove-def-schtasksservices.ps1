@@ -14,7 +14,7 @@ Write-Host "[+] Attempting to disable unwanted scheduled tasks..."
 try {
     #Disables scheduled tasks that are considered unnecessary 
     Write-Output "Disabling scheduled tasks"
-    Get-ScheduledTask  XblGameSaveTaskLogon | Disable-ScheduledTask
+    #Get-ScheduledTask  XblGameSaveTaskLogon | Disable-ScheduledTask //Does not seem to exist anymore
     Get-ScheduledTask  XblGameSaveTask | Disable-ScheduledTask
     Get-ScheduledTask  Consolidator | Disable-ScheduledTask
     Get-ScheduledTask  UsbCeip | Disable-ScheduledTask

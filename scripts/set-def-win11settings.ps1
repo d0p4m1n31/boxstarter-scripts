@@ -1,3 +1,4 @@
+#Set Windows Explorer Options using Boxstarter builtin function
 Set-WindowsExplorerOptions -EnableShowHiddenFilesFoldersDrives -EnableShowProtectedOSFiles -EnableShowFileExtensions -EnableShowFullPathInTitleBar
 
 # Set power options to prevent installs from timing out

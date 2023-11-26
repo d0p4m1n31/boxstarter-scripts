@@ -1,15 +1,4 @@
 
-# List of Built-in aspplications to remove
-$appsToRemove = @(
-    "Microsoft.549981C3F5F10",
-    "Microsoft.XboxGamingOverlay",
-    "Microsoft.XboxIdentityProvider",
-    "Microsoft.XboxSpeechToTextOverlay",
-    "Microsoft.YourPhone",
-    "Microsoft.Office.OneNote",
-    "Microsoft.3DBuilder"
-)
-
 # Get the base URI path from the ScriptToCall value
 $bstrappackage = "-bootstrapPackage"
 $helperUri = $Boxstarter['ScriptToCall']
@@ -24,7 +13,7 @@ write-host "helper script base URI is $helperUri"
 function executeScript {
     Param ([string]$script)
     write-host "executing $helperUri/$script ..."
-    iex ((new-object net.webclient).DownloadString("$helperUri/$script"))
+    Invoke-Expression ((new-object net.webclient).DownloadString("$helperUri/$script"))
 }
 
 # Check PowerShell version
@@ -76,94 +65,54 @@ $Boxstarter.AutoLogin = $true
 $Boxstarter.SuppressLogging = $false
 $global:VerbosePreference = "SilentlyContinue"
 Set-BoxstarterConfig -NugetSources "$desktopPath;.;https://www.myget.org/F/vm-packages/api/v2;https://myget.org/F/vm-packages/api/v2;https://chocolatey.org/api/v2"
-Set-WindowsExplorerOptions -EnableShowHiddenFilesFoldersDrives -EnableShowProtectedOSFiles -EnableShowFileExtensions -EnableShowFullPathInTitleBar
 
-
-# Set power options to prevent installs from timing out
-powercfg -change -monitor-timeout-ac 0 | Out-Null
-powercfg -change -monitor-timeout-dc 0 | Out-Null
-powercfg -change -disk-timeout-ac 0 | Out-Null
-powercfg -change -disk-timeout-dc 0 | Out-Null
-powercfg -change -standby-timeout-ac 0 | Out-Null
-powercfg -change -standby-timeout-dc 0 | Out-Null
-powercfg -change -hibernate-timeout-ac 0 | Out-Null
-powercfg -change -hibernate-timeout-dc 0 | Out-Null
-
-
-# Attempt to disable unwanted services
-Write-Host "[+] Attempting to disable unwanted services..."
+#Set default Windows enviroment settings
 try {
-    Get-Service -Name "MapsBroker", "WbioSrvc", "WMPNetworkSvc", "WSearch" | Stop-Service -Force -ErrorAction Stop | Out-Null
-    Get-Service -Name "MapsBroker", "WbioSrvc", "WMPNetworkSvc", "WSearch" | Set-Service -StartupType Disabled -ErrorAction Stop | Out-Null  
-    Write-Host "`t[+] Finished trying to disable unwanted services" -ForegroundColor Green  
+    executeScript "set-def-win11settings.ps1";
+    Write-Host "`t[+] Success setting Windows environment settings" -ForegroundColor Green    
 }
 catch {
-    Write-Host "`t[!] Failed to disable unwanted services" -ForegroundColor Yellow
+    Write-Host "`t[!] Failed setting Windows environment settings" -ForegroundColor Yellow
 }
 
-# Attempt to disable unwanted scheduled tasks
-Write-Host "[+] Attempting to disable unwanted scheduled tasks..."
+#Remove default installed Windows apps
 try {
-    Get-ScheduledTask -TaskPath "\Microsoft\Windows\*" | Disable-ScheduledTask -ErrorAction SilentlyContinue | Out-Null     
-    Write-Host "`t[+] Finished disabling unwanted scheduled tasks" -ForegroundColor Green       
+    executeScript "remove-def-apps.ps1";
+    Write-Host "`t[+] Removed unwanted default Windows applications" -ForegroundColor Green    
 }
 catch {
-    Write-Host "`t[!] Failed to disable unwanted scheduled tasks" -ForegroundColor Yellow
+    Write-Host "`t[!] Failed to remove unwanted default Windows applications" -ForegroundColor Yellow
 }
 
-# Attempt to disable unwanted features
-Write-Host "[+] Attempting to disable unwanted features..."
+#Remove default installed Windows Configuration parameters
 try {
-    #Disabling Windows Error Reporting
-    Disable-WindowsErrorReporting -ErrorAction SilentlyContinue | Out-Null     
-    Write-Host "`t[+] Finished disabling unwanted features" -ForegroundColor Green       
-
-    #Disables Windows Feedback Experience
-    Write-Host "Disabling Windows Feedback Experience program"
-    $Advertising = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo'
-    If (Test-Path $Advertising) {
-        Set-ItemProperty $Advertising Enabled -Value 0
-    }
-    #Disables live tiles
-    Write-Host "Disabling live tiles"
-    $Live = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications'    
-    If (!(Test-Path $Live)) {
-        mkdir $Live  
-        New-ItemProperty $Live NoTileApplicationNotification -Value 1
-    }    
-    #Disables Bing Search from Taskbar
-    Write-Host "Disabling Bing Search when using Search via the Start Menu"
-    $BingSearch = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer'
-    If (Test-Path $BingSearch) {
-        Set-ItemProperty $BingSearch DisableSearchBoxSuggestions -Value 1
-    }
+    executeScript "remove-def-config.ps1";
+    Write-Host "`t[+] Removed unwanted default Windows configuration" -ForegroundColor Green    
 }
 catch {
-    Write-Host "`t[!] Failed to disable unwanted features" -ForegroundColor Yellow
+    Write-Host "`t[!] Failed to remove unwanted default Windows configuration" -ForegroundColor Yellow
 }
 
-# Attempt to remove unwanted apps
-Write-Host "[+] Attempting to remove default selected apps..."
+#Remove default installed Windows Scheduled Tasks and Services
 try {
-    foreach ($app in $appsToRemove) {
-        Get-AppxPackage -AllUsers | Where-Object { $_.Name -eq $app } | Remove-AppxPackage -AllUsers -ErrorAction Stop | Out-Null 
-        Write-Host "`t[+] Removed (or not found) unwanted default installed app: "$app -ForegroundColor Green  
-    }
+    executeScript "remove-def-schtasksservices.ps1";
+    Write-Host "`t[+] Removed unwanted default Windows Scheduled Tasks and Services" -ForegroundColor Green    
 }
 catch {
-    Write-Host "`t[!] Failed to remove all the unwanted default apps" -ForegroundColor Yellow
+    Write-Host "`t[!] Failed to remove unwanted default Windows Scheduled Tasks and Services" -ForegroundColor Yellow
 }
 
 # Install default applications using Chocolatey
 try {
-    executeScript "DefaultApplications.ps1";
-    executeScript "DevApplications.ps1";
+    executeScript "Def-Apps.ps1";
+    executeScript "Dev-Apps.ps1";
     Write-Host "`t[+] Installed the default applications with Chocolatey" -ForegroundColor Green    
 }
 catch {
     Write-Host "`t[!] Failed to install (some) default applications" -ForegroundColor Yellow
 }
 
+#Reanable UAC and Microsoft Update. Install updates when ready
 Enable-UAC
 Enable-MicrosoftUpdate
 Install-WindowsUpdate -acceptEula
