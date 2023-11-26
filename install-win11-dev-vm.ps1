@@ -104,8 +104,8 @@ catch {
 
 # Install default applications using Chocolatey
 try {
-    executeScript "Def-Apps.ps1";
-    executeScript "Dev-Apps.ps1";
+    executeScript "install-defapps.ps1";
+    executeScript "install-devapps.ps1";
     Write-Host "`t[+] Installed the default applications with Chocolatey" -ForegroundColor Green    
 }
 catch {

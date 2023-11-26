@@ -104,14 +104,14 @@ catch {
 
 # Install default applications using Chocolatey
 try {
-    executeScript "DefaultApplications.ps1";
+    executeScript "install-defapps.ps1";
     Write-Host "`t[+] Installed the default applications with Chocolatey" -ForegroundColor Green    
 }
 catch {
     Write-Host "`t[!] Failed to install (some) default applications" -ForegroundColor Yellow
 }
 
-#Reanable UAC and Microsoft Update. Install updates when ready
+#Re-enable UAC and Microsoft Update. Install updates when ready
 Enable-UAC
 Enable-MicrosoftUpdate
 Install-WindowsUpdate -acceptEula
