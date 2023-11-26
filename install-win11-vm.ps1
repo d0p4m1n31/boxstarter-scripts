@@ -79,75 +79,9 @@ powercfg -change -hibernate-timeout-ac 0 | Out-Null
 powercfg -change -hibernate-timeout-dc 0 | Out-Null
 
 
-# Attempt to disable unwanted services
-Write-Host "[+] Attempting to disable unwanted services..."
-try {
-    Get-Service -Name "MapsBroker", "WbioSrvc", "WMPNetworkSvc", "WSearch" | Stop-Service -Force -ErrorAction Stop | Out-Null
-    Get-Service -Name "MapsBroker", "WbioSrvc", "WMPNetworkSvc", "WSearch" | Set-Service -StartupType Disabled -ErrorAction Stop | Out-Null  
-    Write-Host "`t[+] Finished trying to disable unwanted services" -ForegroundColor Green  
-}
-catch {
-    Write-Host "`t[!] Failed to disable unwanted services" -ForegroundColor Yellow
-}
-
-# Attempt to disable unwanted scheduled tasks
-Write-Host "[+] Attempting to disable unwanted scheduled tasks..."
-try {
-    Get-ScheduledTask -TaskPath "\Microsoft\Windows\*" | Disable-ScheduledTask -ErrorAction SilentlyContinue | Out-Null     
-    Write-Host "`t[+] Finished disabling unwanted scheduled tasks" -ForegroundColor Green       
-}
-catch {
-    Write-Host "`t[!] Failed to disable unwanted scheduled tasks" -ForegroundColor Yellow
-}
-
-# Attempt to disable unwanted features
-Write-Host "[+] Attempting to disable unwanted features..."
-try {
-    #Disabling Windows Error Reporting
-    Disable-WindowsErrorReporting -ErrorAction SilentlyContinue | Out-Null     
-    Write-Host "`t[+] Finished disabling unwanted features" -ForegroundColor Green       
-
-    #Disables Windows Feedback Experience
-    Write-Host "Disabling Windows Feedback Experience program"
-    $Advertising = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo'
-    If (Test-Path $Advertising) {
-        Set-ItemProperty $Advertising Enabled -Value 0
-    }
-    #Disables live tiles
-    Write-Host "Disabling live tiles"
-    $Live = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications'    
-    If (!(Test-Path $Live)) {
-        mkdir $Live  
-        New-ItemProperty $Live NoTileApplicationNotification -Value 1
-    }    
-    #Disables Bing Search from Taskbar
-    Write-Host "Disabling Bing Search when using Search via the Start Menu"
-    $BingSearch = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer'
-    If (Test-Path $BingSearch) {
-        Set-ItemProperty $BingSearch DisableSearchBoxSuggestions -Value 1
-    }
-    #Turns off Data Collection via the Allow Telemetry key by changing it to 0
-    Write-Output "Turning off Data Collection"
-    $DataCollection1 = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection"
-    $DataCollection2 = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection"
-    $DataCollection3 = "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\DataCollection"    
-    If (Test-Path $DataCollection1) {
-        Set-ItemProperty $DataCollection1  AllowTelemetry -Value 0 
-    }
-    If (Test-Path $DataCollection2) {
-        Set-ItemProperty $DataCollection2  AllowTelemetry -Value 0 
-    }
-    If (Test-Path $DataCollection3) {
-        Set-ItemProperty $DataCollection3  AllowTelemetry -Value 0 
-    }
- 
-   
-}
-catch {
-    Write-Host "`t[!] Failed to disable unwanted features" -ForegroundColor Yellow
-}
-
 executeScript "remove-unwanted-apps.ps1"
+executeScript "remove-unwanted-config.ps1"
+executeScript "remove-unwanted-schtasks-services.ps1"
 
 # Install default applications using Chocolatey
 try {
