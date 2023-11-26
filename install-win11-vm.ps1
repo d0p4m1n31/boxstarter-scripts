@@ -1,15 +1,4 @@
 
-# List of Built-in aspplications to remove
-$appsToRemove = @(
-    "Microsoft.549981C3F5F10",
-    "Microsoft.XboxGamingOverlay",
-    "Microsoft.XboxIdentityProvider",
-    "Microsoft.XboxSpeechToTextOverlay",
-    "Microsoft.YourPhone",
-    "Microsoft.Office.OneNote",
-    "Microsoft.3DBuilder"
-)
-
 # Get the base URI path from the ScriptToCall value
 $bstrappackage = "-bootstrapPackage"
 $helperUri = $Boxstarter['ScriptToCall']
@@ -151,36 +140,14 @@ try {
     If (Test-Path $DataCollection3) {
         Set-ItemProperty $DataCollection3  AllowTelemetry -Value 0 
     }
-
-    
-    Write-Host "Disabling Virtualization based Security"
-    $VBSPath = "HKLM:SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity"
-    if(Test-Path $VBSPath) {
-        Set-ItemProperty -Path $VBSPath -Name Enabled -Value 0
-    }
-    $checkSearch = Get-ItemProperty -Path $VBSPath -Name Enabled
-    if( $checkSearch.Enabled -eq 0 ) {
-        Write-Host "Done" -ForegroundColor Green -BackgroundColor white `n
-    }
-
-
-        
+ 
+   
 }
 catch {
     Write-Host "`t[!] Failed to disable unwanted features" -ForegroundColor Yellow
 }
 
-# Attempt to remove unwanted apps
-Write-Host "[+] Attempting to remove default selected apps..."
-try {
-    foreach ($app in $appsToRemove) {
-        Get-AppxPackage -AllUsers | Where-Object { $_.Name -eq $app } | Remove-AppxPackage -AllUsers -ErrorAction Stop | Out-Null 
-        Write-Host "`t[+] Removed (or not found) unwanted default installed app: "$app -ForegroundColor Green  
-    }
-}
-catch {
-    Write-Host "`t[!] Failed to remove all the unwanted default apps" -ForegroundColor Yellow
-}
+executeScript "remove-unwanted-apps.ps1"
 
 # Install default applications using Chocolatey
 try {
