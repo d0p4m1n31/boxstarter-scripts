@@ -67,49 +67,31 @@ $global:VerbosePreference = "SilentlyContinue"
 Set-BoxstarterConfig -NugetSources "$desktopPath;.;https://www.myget.org/F/vm-packages/api/v2;https://myget.org/F/vm-packages/api/v2;https://chocolatey.org/api/v2"
 
 #Set default Windows enviroment settings
-try {
-    executeScript "set-def-win11settings.ps1";
-    Write-Host "`t[+] Success setting Windows environment settings" -ForegroundColor Green    
-}
-catch {
-    Write-Host "`t[!] Failed setting Windows environment settings" -ForegroundColor Yellow
-}
+executeScript "set-def-win11settings.ps1";
 
 #Remove default installed Windows apps
-try {
-    executeScript "remove-def-apps.ps1";
-    Write-Host "`t[+] Removed unwanted default Windows applications" -ForegroundColor Green    
-}
-catch {
-    Write-Host "`t[!] Failed to remove unwanted default Windows applications" -ForegroundColor Yellow
-}
+executeScript "remove-def-apps.ps1";
 
 #Remove default installed Windows Configuration parameters
 try {
     executeScript "remove-def-config.ps1";
-    Write-Host "`t[+] Removed unwanted default Windows configuration" -ForegroundColor Green    
+    Write-Host "[+] Removed unwanted default Windows configuration" -ForegroundColor Green    
 }
 catch {
-    Write-Host "`t[!] Failed to remove unwanted default Windows configuration" -ForegroundColor Yellow
+    Write-Host "[!] Failed to remove unwanted default Windows configuration" -ForegroundColor Yellow
 }
 
 #Remove default installed Windows Scheduled Tasks and Services
 try {
     executeScript "remove-def-schtasksservices.ps1";
-    Write-Host "`t[+] Removed unwanted default Windows Scheduled Tasks and Services" -ForegroundColor Green    
+    Write-Host "[+] Removed unwanted default Windows Scheduled Tasks and Services" -ForegroundColor Green    
 }
 catch {
-    Write-Host "`t[!] Failed to remove unwanted default Windows Scheduled Tasks and Services" -ForegroundColor Yellow
+    Write-Host "[!] Failed to remove unwanted default Windows Scheduled Tasks and Services" -ForegroundColor Yellow
 }
 
 # Install default applications using Chocolatey
-try {
-    executeScript "install-defapps.ps1";
-    Write-Host "`t[+] Installed the default applications with Chocolatey" -ForegroundColor Green    
-}
-catch {
-    Write-Host "`t[!] Failed to install (some) default applications" -ForegroundColor Yellow
-}
+executeScript "install-defapps.ps1";
 
 #Re-enable UAC and Microsoft Update. Install updates when ready
 Enable-UAC
