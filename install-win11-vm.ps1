@@ -137,6 +137,34 @@ try {
     If (Test-Path $BingSearch) {
         Set-ItemProperty $BingSearch DisableSearchBoxSuggestions -Value 1
     }
+    #Turns off Data Collection via the Allow Telemetry key by changing it to 0
+    Write-Output "Turning off Data Collection"
+    $DataCollection1 = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection"
+    $DataCollection2 = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection"
+    $DataCollection3 = "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\DataCollection"    
+    If (Test-Path $DataCollection1) {
+        Set-ItemProperty $DataCollection1  AllowTelemetry -Value 0 
+    }
+    If (Test-Path $DataCollection2) {
+        Set-ItemProperty $DataCollection2  AllowTelemetry -Value 0 
+    }
+    If (Test-Path $DataCollection3) {
+        Set-ItemProperty $DataCollection3  AllowTelemetry -Value 0 
+    }
+
+    
+    Write-Host "Disabling Virtualization based Security"
+    $VBSPath = "HKLM:SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity"
+    if(Test-Path $VBSPath) {
+        Set-ItemProperty -Path $VBSPath -Name Enabled -Value 0
+    }
+    $checkSearch = Get-ItemProperty -Path $VBSPath -Name Enabled
+    if( $checkSearch.Enabled -eq 0 ) {
+        Write-Host "Done" -ForegroundColor Green -BackgroundColor white `n
+    }
+
+
+        
 }
 catch {
     Write-Host "`t[!] Failed to disable unwanted features" -ForegroundColor Yellow
