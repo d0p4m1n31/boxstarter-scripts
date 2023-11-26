@@ -65,23 +65,42 @@ $Boxstarter.AutoLogin = $true
 $Boxstarter.SuppressLogging = $false
 $global:VerbosePreference = "SilentlyContinue"
 Set-BoxstarterConfig -NugetSources "$desktopPath;.;https://www.myget.org/F/vm-packages/api/v2;https://myget.org/F/vm-packages/api/v2;https://chocolatey.org/api/v2"
-Set-WindowsExplorerOptions -EnableShowHiddenFilesFoldersDrives -EnableShowProtectedOSFiles -EnableShowFileExtensions -EnableShowFullPathInTitleBar
 
+#Set default Windows enviroment settings
+try {
+    executeScript "set-def-win11settings.ps1";
+    Write-Host "`t[+] Success setting Windows environment settings" -ForegroundColor Green    
+}
+catch {
+    Write-Host "`t[!] Failed setting Windows environment settings" -ForegroundColor Yellow
+}
 
-# Set power options to prevent installs from timing out
-powercfg -change -monitor-timeout-ac 0 | Out-Null
-powercfg -change -monitor-timeout-dc 0 | Out-Null
-powercfg -change -disk-timeout-ac 0 | Out-Null
-powercfg -change -disk-timeout-dc 0 | Out-Null
-powercfg -change -standby-timeout-ac 0 | Out-Null
-powercfg -change -standby-timeout-dc 0 | Out-Null
-powercfg -change -hibernate-timeout-ac 0 | Out-Null
-powercfg -change -hibernate-timeout-dc 0 | Out-Null
+#Remove default installed Windows apps
+try {
+    executeScript "remove-def-apps.ps1";
+    Write-Host "`t[+] Removed unwanted default Windows applications" -ForegroundColor Green    
+}
+catch {
+    Write-Host "`t[!] Failed to remove unwanted default Windows applications" -ForegroundColor Yellow
+}
 
+#Remove default installed Windows Configuration parameters
+try {
+    executeScript "remove-def-config.ps1";
+    Write-Host "`t[+] Removed unwanted default Windows configuration" -ForegroundColor Green    
+}
+catch {
+    Write-Host "`t[!] Failed to remove unwanted default Windows configuration" -ForegroundColor Yellow
+}
 
-executeScript "remove-unwanted-apps.ps1"
-executeScript "remove-unwanted-config.ps1"
-executeScript "remove-unwanted-schtasks-services.ps1"
+#Remove default installed Windows Scheduled Tasks and Services
+try {
+    executeScript "remove-def-schtasksservices.ps1";
+    Write-Host "`t[+] Removed unwanted default Windows Scheduled Tasks and Services" -ForegroundColor Green    
+}
+catch {
+    Write-Host "`t[!] Failed to remove unwanted default Windows Scheduled Tasks and Services" -ForegroundColor Yellow
+}
 
 # Install default applications using Chocolatey
 try {
@@ -92,6 +111,7 @@ catch {
     Write-Host "`t[!] Failed to install (some) default applications" -ForegroundColor Yellow
 }
 
+#Reanable UAC and Microsoft Update. Install updates when ready
 Enable-UAC
 Enable-MicrosoftUpdate
 Install-WindowsUpdate -acceptEula
