@@ -16,7 +16,7 @@ function executeScript {
     Invoke-Expression ((new-object net.webclient).DownloadString("$helperUri/$script"))
 }
 
-# Check PowerShell version
+# Check PowerShell version to make sure it's a minimum of 5.0.0 
 Write-Host "[+] Checking if PowerShell version is compatible..."
 $psVersion = $PSVersionTable.PSVersion
 if ($psVersion -lt [System.Version]"5.0.0") {
@@ -73,22 +73,10 @@ executeScript "set-def-win11settings.ps1";
 executeScript "remove-def-apps.ps1";
 
 #Remove default installed Windows Configuration parameters
-try {
-    executeScript "remove-def-config.ps1";
-    Write-Host "[+] Removed unwanted default Windows configuration" -ForegroundColor Green    
-}
-catch {
-    Write-Host "[!] Failed to remove unwanted default Windows configuration" -ForegroundColor Yellow
-}
+executeScript "remove-def-config.ps1";
 
 #Remove default installed Windows Scheduled Tasks and Services
-try {
-    executeScript "remove-def-schtasksservices.ps1";
-    Write-Host "[+] Removed unwanted default Windows Scheduled Tasks and Services" -ForegroundColor Green    
-}
-catch {
-    Write-Host "[!] Failed to remove unwanted default Windows Scheduled Tasks and Services" -ForegroundColor Yellow
-}
+executeScript "remove-def-schtasksservices.ps1";
 
 # Install default applications using Chocolatey
 executeScript "install-defapps.ps1";
