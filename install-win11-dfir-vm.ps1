@@ -16,7 +16,7 @@ function executeScript {
     Invoke-Expression ((new-object net.webclient).DownloadString("$helperUri/$script"))
 }
 
-# Check PowerShell version
+# Check PowerShell version to make sure it's a minimum of 5.0.0 
 Write-Host "[+] Checking if PowerShell version is compatible..."
 $psVersion = $PSVersionTable.PSVersion
 if ($psVersion -lt [System.Version]"5.0.0") {
@@ -67,52 +67,24 @@ $global:VerbosePreference = "SilentlyContinue"
 Set-BoxstarterConfig -NugetSources "$desktopPath;.;https://www.myget.org/F/vm-packages/api/v2;https://myget.org/F/vm-packages/api/v2;https://chocolatey.org/api/v2"
 
 #Set default Windows enviroment settings
-try {
-    executeScript "set-def-win11settings.ps1";
-    Write-Host "`t[+] Success setting Windows environment settings" -ForegroundColor Green    
-}
-catch {
-    Write-Host "`t[!] Failed setting Windows environment settings" -ForegroundColor Yellow
-}
+executeScript "set-def-win11settings.ps1";
 
 #Remove default installed Windows apps
-try {
-    executeScript "remove-def-apps.ps1";
-    Write-Host "`t[+] Removed unwanted default Windows applications" -ForegroundColor Green    
-}
-catch {
-    Write-Host "`t[!] Failed to remove unwanted default Windows applications" -ForegroundColor Yellow
-}
+executeScript "remove-def-apps.ps1";
 
 #Remove default installed Windows Configuration parameters
-try {
-    executeScript "remove-def-config.ps1";
-    Write-Host "`t[+] Removed unwanted default Windows configuration" -ForegroundColor Green    
-}
-catch {
-    Write-Host "`t[!] Failed to remove unwanted default Windows configuration" -ForegroundColor Yellow
-}
+executeScript "remove-def-config.ps1";
 
 #Remove default installed Windows Scheduled Tasks and Services
-try {
-    executeScript "remove-def-schtasksservices.ps1";
-    Write-Host "`t[+] Removed unwanted default Windows Scheduled Tasks and Services" -ForegroundColor Green    
-}
-catch {
-    Write-Host "`t[!] Failed to remove unwanted default Windows Scheduled Tasks and Services" -ForegroundColor Yellow
-}
+executeScript "remove-def-schtasksservices.ps1";
 
-# Install default applications using Chocolatey
-try {
-    executeScript "install-defapps.ps1";
-    executeScript "install-devapps.ps1";
-    Write-Host "`t[+] Installed the default applications with Chocolatey" -ForegroundColor Green    
-}
-catch {
-    Write-Host "`t[!] Failed to install (some) default applications" -ForegroundColor Yellow
-}
+#Install default applications using Chocolatey
+executeScript "install-defapps.ps1";
 
-#Reanable UAC and Microsoft Update. Install updates when ready
+#Install DFIR applications
+executeScript "install-dfirapps.ps1"; #add your dfir applications in this script
+
+#Re-enable UAC and Microsoft Update. Install updates when ready
 Enable-UAC
 Enable-MicrosoftUpdate
 Install-WindowsUpdate -acceptEula

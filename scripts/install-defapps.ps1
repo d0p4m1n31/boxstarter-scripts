@@ -1,4 +1,6 @@
-# Default tools to install on every machine
+#Default applications to install on your machine. You can find supported packages on https://community.chocolatey.org/packages
+
+Write-Host "Installing Development applications"
 try{
     choco install -y notepadplusplus
     choco install -y 7zip.install

@@ -1,6 +1,6 @@
-#remove unwanted applications
+#Remove default installed applications from Microsoft Windows 
 
-#List of Built-in aspplications to remove
+#List of applications to remove from the system
 $appsToRemove = @(
     "Microsoft.549981C3F5F10",
     "Microsoft.XboxGamingOverlay",
@@ -10,12 +10,14 @@ $appsToRemove = @(
     "Microsoft.Office.OneNote",
     "Microsoft.3DBuilder"
 )
+
+Write-Host "Removing default installed applications"
 try {
     foreach ($app in $appsToRemove) {
         Get-AppxPackage -AllUsers | Where-Object { $_.Name -eq $app } | Remove-AppxPackage -AllUsers -ErrorAction Stop | Out-Null 
-        Write-Host "`t[+] Removed (or not found) unwanted default installed app: "$app -ForegroundColor Green  
+        Write-Host "`t[+] Removed (or not found) application: "$app -ForegroundColor Green  
     }    
-    Write-Host "[+] Removed unwanted default Windows applications" -ForegroundColor Green    
+    Write-Host "[+] Removed default installed applications" -ForegroundColor Green    
 }
 catch {
     Write-Host "[!] Failed to remove unwanted default Windows applications" -ForegroundColor Yellow

@@ -1,9 +1,11 @@
-# Default tools to install on every machine
+#Development applications to install on your machine. You can find supported packages on https://community.chocolatey.org/packages
+
+Write-Host "Installing Development applications"
 try{    
     choco install -y vscode
     choco install -y hXd
-    Write-Host "[+] Installed the Development applications with Chocolatey" -ForegroundColor Green    
+    Write-Host "`t[+] Installed the Development applications with Chocolatey" -ForegroundColor Green    
 }
 catch {
-    Write-Host "[!] Failed to install (some) Development applications" -ForegroundColor Yellow
+    Write-Host "`t[!] Failed to install (some) Development applications" -ForegroundColor Yellow
 }

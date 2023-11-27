@@ -1,6 +1,7 @@
-#Install specific apps for Digital Forensics and Incident Response VM (DFIR)
-try{
+#Install specific apps for Digital Forensics and Incident Response VM (DFIR). You can find supported packages on https://community.chocolatey.org/packages
 
+Write-Host "Installing Development applications"
+try{
     choco install -y powertoys 
     choco install -y vscode 
     choco install -y putty 
@@ -17,8 +18,8 @@ try{
     choco install -y veeam-backup-and-replication-extract 
     choco install -y volatility3 
     choco install -y hxd
-    Write-Host "[+] Installed the DFIR applications with Chocolatey" -ForegroundColor Green    
+    Write-Host "`t[+] Installed the DFIR applications with Chocolatey" -ForegroundColor Green    
 }
 catch {
-    Write-Host "[!] Failed to install (some) DFIR applications" -ForegroundColor Yellow
+    Write-Host "`t[!] Failed to install (some) DFIR applications" -ForegroundColor Yellow
 }
