@@ -70,13 +70,13 @@ Set-BoxstarterConfig -NugetSources "$desktopPath;.;https://www.myget.org/F/vm-pa
 executeScript "set-def-win11settings.ps1";
 
 #Remove default installed Windows apps
-executeScript "remove-def-apps.ps1";
+executeScript "remove-def-win11apps.ps1";
 
 #Remove default installed Windows Configuration parameters
-executeScript "remove-def-config.ps1";
+executeScript "remove-def-win11config.ps1";
 
 #Remove default installed Windows Scheduled Tasks and Services
-executeScript "remove-def-schtasksservices.ps1";
+executeScript "remove-def-win11schtasksservices.ps1";
 
 # Install default applications using Chocolatey
 executeScript "install-defapps.ps1";

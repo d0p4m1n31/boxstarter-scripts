@@ -14,7 +14,7 @@ $appsToRemove = @(
 Write-Host "Removing default installed applications"
 try {
     foreach ($app in $appsToRemove) {
-        Get-AppxPackage -AllUsers | Where-Object { $_.Name -eq $app } | Remove-AppxPackage -AllUsers -ErrorAction Stop | Out-Null 
+        Get-AppxPackage -AllUsers | Where-Object { $_.Name -eq $app } #| Remove-AppxPackage -AllUsers -ErrorAction Stop | Out-Null 
         Write-Host "`t[+] Removed (or not found) application: "$app -ForegroundColor Green  
     }    
     Write-Host "[+] Removed default installed applications" -ForegroundColor Green    

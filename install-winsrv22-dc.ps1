@@ -72,10 +72,7 @@ Set-BoxstarterConfig -NugetSources "$desktopPath;.;https://www.myget.org/F/vm-pa
 Rename-Computer -ComputerName $computerName
 
 #Set default Windows enviroment settings
-executeScript "set-def-win11settings.ps1";
-
-#Remove default installed Windows apps
-#executeScript "remove-def-apps.ps1";
+executeScript "set-def-winsrv22settings.ps1";
 
 #Remove default installed Windows Configuration parameters
 #executeScript "remove-def-config.ps1";
@@ -86,7 +83,7 @@ executeScript "set-def-win11settings.ps1";
 # Install default applications using Chocolatey
 executeScript "install-defapps.ps1";
 
-executeScript "install-fullADcontent.ps1"
+#executeScript "install-fullADcontent.ps1"
 
 #Re-enable UAC and Microsoft Update. Install updates when ready
 Enable-UAC
