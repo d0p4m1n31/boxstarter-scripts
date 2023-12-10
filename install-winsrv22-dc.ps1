@@ -1,5 +1,5 @@
 #Variables for the script
-$computerName = "dc-01";
+$computerName = Read-Host "Enter the hostname for this server"
 
 # Get the base URI path from the ScriptToCall value
 $bstrappackage = "-bootstrapPackage"
@@ -74,16 +74,9 @@ Rename-Computer -ComputerName $computerName
 #Set default Windows enviroment settings
 executeScript "set-def-winsrv22settings.ps1";
 
-#Remove default installed Windows Configuration parameters
-#executeScript "remove-def-config.ps1";
-
-#Remove default installed Windows Scheduled Tasks and Services
-#executeScript "remove-def-schtasksservices.ps1";
-
 # Install default applications using Chocolatey
-executeScript "install-defapps.ps1";
-
-#executeScript "install-fullADcontent.ps1"
+executeScript "install-defsrvapps.ps1";
+executeScript "install-fullADcontent.ps1"
 
 #Re-enable UAC and Microsoft Update. Install updates when ready
 Enable-UAC

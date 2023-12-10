@@ -2,18 +2,18 @@
 
 Write-Host "Installing full Active Directory environment"
 try{
-    choco install -y git
+    #Create install folder and clone the BadBlood repo
     New-Item -ItemType Directory -Path C:\InstallFIles
-    # clone the repo
     git clone https://github.com/davidprowe/badblood.git "c:\InstallFiles"
     
     #Run Invoke-badblood.ps1
     Import-Module ActiveDirectory
-    c:\InstallFiles\badblood\invoke-badblood.ps1
-    Write-Host "[+] Installed the default applications with Chocolatey" -ForegroundColor Green    
+    c:\InstallFiles\badblood\ Invoke-BadBlood.ps1 -UserCount 100 -GroupCount 50 -ComputerCount 150  -SkipLapsInstall -NonInteractive
+    
+    Write-Host "[+] Installed the Full Lab Active Directory" -ForegroundColor Green    
 }
 catch {
-    Write-Host "[!] Failed to install (some) default applications" -ForegroundColor Yellow
+    Write-Host "[!] Failed to install the Full Lab Active Directory" -ForegroundColor Yellow
 }
 
 
